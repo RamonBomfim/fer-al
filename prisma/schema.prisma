@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  fullName  String
+  email     String   @unique
+  password  String
+  role      Role     @default(VISITANTE)
+  createdAt DateTime @default(now())
+
+  vendor           Vendor?
+  organizer        Organizer?
+  approvalRequests ApprovalRequest[]
+}
+
+model Vendor {
+  id           Int      @id @default(autoincrement())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       Int      @unique
+  storeName    String
+  whatSells    String
+  partnerNames String?
+  cnpj         String
+  keywords     String[]
+
+  fairs Fair[] @relation("FairVendors")
+}
+
+model Organizer {
+  id        Int    @id @default(autoincrement())
+  user      User   @relation(fields: [userId], references: [id])
+  userId    Int    @unique
+  cpfOrCnpj String
+
+  myFairs Fair[]
+}
+
+model ApprovalRequest {
+  id            Int            @id @default(autoincrement())
+  user          User           @relation(fields: [userId], references: [id])
+  userId        Int
+  requestedRole Role
+  cpfOrCnpj     String
+  createdAt     DateTime       @default(now())
+  status        ApprovalStatus @default(PENDING)
+}
+
+model Fair {
+  id           Int          @id @default(autoincrement())
+  organizer    Organizer    @relation(fields: [organizerId], references: [userId])
+  organizerId  Int
+  name         String
+  description  String
+  date         DateTime
+  time         String
+  local        String
+  status       FairStatus @default(COMING)
+  productTypes ProductTypes
+  vendors      Vendor[]     @relation("FairVendors")
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum Role {
+  VISITANTE
+  ORGANIZADOR
+  VENDEDOR
+  SUPERUSER
+}
+
+enum ProductTypes {
+  FOOD
+  FRUITS
+  OTHERS
+}
+
+enum FairStatus {
+  CANCELED
+  DELAYED
+  HAPPENED
+  COMING
+}
