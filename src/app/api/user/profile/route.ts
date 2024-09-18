@@ -87,7 +87,7 @@ export async function PATCH(request: Request) {
         return NextResponse.json({ error: 'Usuário já possui uma aprovação pendente' }, { status: 400 });
       }
 
-      if (user?.approvalRequests && user?.approvalRequests?.length > 0 && user?.approvalRequests[0].status === ('APPROVED' || 'REJECTED')) {
+      if (user?.approvalRequests && user?.approvalRequests?.length > 0 && user?.approvalRequests[0].status !== "PENDING") {
         await prisma.approvalRequest.delete({
           where: { id: user?.approvalRequests[0].id }
         })
