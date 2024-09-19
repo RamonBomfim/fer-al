@@ -61,7 +61,7 @@ model Fair {
   date         DateTime
   time         String
   local        String
-  status       FairStatus @default(COMING)
+  status       FairStatus   @default(COMING)
   productTypes ProductTypes
   vendors      Vendor[]     @relation("FairVendors")
 }
@@ -80,8 +80,10 @@ enum Role {
 }
 
 enum ProductTypes {
-  FOOD
-  FRUITS
+  ARTESANATO
+  ALIMENTOS
+  MODA
+  EVENTOS_CULTURAIS
   OTHERS
 }
 

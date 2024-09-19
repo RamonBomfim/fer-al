@@ -13,14 +13,10 @@ enum Role {
 export function Header() {
   const router = useRouter();
   const [role, setRole] = useState<Role>(Role.visitante);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchRole() {
-      setLoading(true);
-      setError(null);
-
       try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -45,8 +41,6 @@ export function Header() {
       } catch (error: any) {
         console.error("Error fetching profile:", error.message);
         setError(error.message);
-      } finally {
-        setLoading(false);
       }
     }
 
@@ -61,22 +55,21 @@ export function Header() {
     router.push("/");
   };
 
-  if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   if (!role) return <p>No role data available</p>;
 
   return (
-    <header className="bg-gray-900 text-white p-4 fixed top-0 left-0 w-full z-50">
+    <header className="bg-[#03045E] text-white p-4 w-full">
       <nav className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
           <Link href="/home" className="text-2xl font-bold">
-            Meu App
+            Início
           </Link>
         </div>
         <ul className="flex space-x-4">
           <li>
             <Link href="/home" className="hover:text-gray-400">
-              Dashboard
+              Feiras
             </Link>
           </li>
           <li>

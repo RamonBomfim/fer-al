@@ -23,7 +23,7 @@ export default function MyFairs() {
   const router = useRouter();
 
   const handleClickEdit = (id: number) => {
-    router.push(`/my-fairs/edit/${id}`);
+    router.push(`/my-fairs/fair/${id}`);
   };
 
   useEffect(() => {
@@ -69,25 +69,32 @@ export default function MyFairs() {
 
   return (
     <div>
-      {myFairs.map((fair) => {
-        return (
-          <div key={fair.id}>
-            <h1>{fair.name}</h1>
-            <p>{fair.description}</p>
-            <p>{fair.date}</p>
-            <p>{fair.time}</p>
-            <p>{fair.local}</p>
-            <p>{fair.status}</p>
-            <p>{fair.productTypes}</p>
-            <button
-              onClick={() => handleClickEdit(fair.id)}
-              className="bg-blue-500 text-white p-2 rounded-md"
-            >
-              Editar
-            </button>
-          </div>
-        );
-      })}
+      <button type="button" onClick={() => router.push("/my-fairs/fair")}>
+        Cadastrar nova feira
+      </button>
+      {myFairs.length > 0 ? (
+        myFairs.map((fair) => {
+          return (
+            <div key={fair.id}>
+              <h1>{fair.name}</h1>
+              <p>{fair.description}</p>
+              <p>{fair.date}</p>
+              <p>{fair.time}</p>
+              <p>{fair.local}</p>
+              <p>{fair.status}</p>
+              <p>{fair.productTypes}</p>
+              <button
+                onClick={() => handleClickEdit(fair.id)}
+                className="bg-blue-500 text-white p-2 rounded-md"
+              >
+                Editar
+              </button>
+            </div>
+          );
+        })
+      ) : (
+        <p>Você ainda não cadastrou feiras</p>
+      )}
     </div>
   );
 }

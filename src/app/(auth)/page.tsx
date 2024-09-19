@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -25,7 +26,7 @@ export default function Login() {
       if (response.ok) {
         // Armazena o token em um cookie (pode ser ajustado para sua configuração específica)
         localStorage.setItem("token", result.token);
-        router.push("/profile");
+        router.push("/home");
       } else {
         alert(result.message || "Erro ao fazer login");
       }
@@ -35,13 +36,13 @@ export default function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Login</h2>
+    <div className="w-full max-w-lg">
+      <h2 className="text-2xl font-bold mb-4 text-center">Faça seu login</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-base font-medium text-[#caf0f8]"
           >
             Email
           </label>
@@ -50,14 +51,14 @@ export default function Login() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-[#03045e]"
             required
           />
         </div>
         <div className="mb-4">
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-base font-medium text-[#caf0f8]"
           >
             Senha
           </label>
@@ -66,17 +67,24 @@ export default function Login() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-[#03045e]"
             required
           />
         </div>
+
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded-md"
+          className="w-full bg-[#03045e] text-[#CAF0F8] p-2 rounded-md"
         >
           Login
         </button>
       </form>
+      <p className="text-base text-[#CAF0F8] mt-2">
+        Ainda não tem uma conta?{" "}
+        <Link href="/register" className="text-base font-bold hover:underline">
+          Clique aqui
+        </Link>
+      </p>
     </div>
   );
 }
