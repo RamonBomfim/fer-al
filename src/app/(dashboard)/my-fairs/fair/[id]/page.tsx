@@ -2,6 +2,11 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+interface Vendor {
+  id: number;
+  name: string;
+}
+
 interface Fair {
   id: number;
   organizerId: number;
@@ -12,7 +17,7 @@ interface Fair {
   local: string;
   productTypes: string;
   status: string;
-  vendors: [];
+  vendors: Vendor[];
 }
 
 export default function EditFair() {
@@ -28,29 +33,69 @@ export default function EditFair() {
     date: "",
     time: "",
     local: "",
-    productTypes: "",
+    productTypes: "OTHERS",
     status: "",
     vendors: [],
   });
+
+  useEffect(() => {
+    async function fetchFair() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("Token não encontrado.");
+        }
+
+        const response = await fetch("/api/user/fairs/edit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token, id: Number(id) }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Erro ao buscar a feira.");
+        }
+
+        const data = await response.json();
+
+        const treatDate = new Date(data.fair.date).toISOString().split("T")[0];
+        setFair({ ...data.fair, date: treatDate });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchFair();
+  }, [id]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setFair({ ...fair, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const {
-        name,
-        description,
-        date,
-        time,
-        local,
-        productTypes,
-        status,
-        vendors,
-      } = fair;
+      const { name, description, date, time, local, productTypes, status } =
+        fair;
 
       const treatDate = new Date(date).toISOString();
 
       const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token não encontrado.");
+      }
+
       const response = await fetch("/api/user/fairs/edit", {
         method: "PATCH",
         headers: {
@@ -64,7 +109,6 @@ export default function EditFair() {
           local,
           productTypes,
           status,
-          vendors,
           token,
           id: Number(id),
         }),
@@ -73,152 +117,120 @@ export default function EditFair() {
       const data = await response.json();
 
       if (data.success) {
-        alert("Feira atualizada com sucesso");
+        alert("Feira atualizada com sucesso.");
         router.push("/my-fairs");
       } else {
-        setError("Erro ao atualizar o feira");
+        setError("Erro ao atualizar a feira.");
       }
     } catch (error) {
-      setError("Erro ao tentar atualizar feira");
+      setError("Erro ao tentar atualizar a feira.");
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setFair({ ...fair, [e.target.name]: e.target.value });
-  };
-
-  useEffect(() => {
-    async function fetchMyFairs() {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("No token found");
-        }
-
-        const response = await fetch("/api/user/fairs/edit", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token, id: Number(id) }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch profile");
-        }
-
-        const data = await response.json();
-
-        const treatDate = new Date(data.fair.date).toISOString().split("T")[0];
-
-        data.fair.date = treatDate;
-
-        setFair(data.fair);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        console.error("Error fetching fairs:", error.message);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchMyFairs();
-  }, [id]);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
-  if (!fair) return <p>No fair data available</p>;
+  if (loading) return <p className="text-center">Carregando...</p>;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">{fair.name}</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Nome da feira</label>
-          <input
-            type="text"
-            name="name"
-            value={fair.name || ""}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
-        </div>
+    <div className="min-h-screen w-2/3 flex items-center justify-center">
+      <div className="max-w-lg w-full bg-white p-6 rounded-md shadow-md">
+        <h1 className="text-2xl font-bold text-center mb-6 text-black">
+          Editar Feira
+        </h1>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-2">
+              Nome da feira
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={fair.name || ""}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-black"
+              required
+            />
+          </div>
 
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Descrição</label>
-          <input
-            type="text"
-            name="description"
-            value={fair.description || ""}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
-        </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-2">
+              Descrição
+            </label>
+            <input
+              type="text"
+              name="description"
+              value={fair.description || ""}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-black"
+              required
+            />
+          </div>
 
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Date</label>
-          <input
-            type="date"
-            name="date"
-            value={fair.date || ""}
-            onChange={handleChange}
-            className="w-full p-2 border text-black border-gray-300 rounded-md"
-          />
-        </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-2">Data</label>
+            <input
+              type="date"
+              name="date"
+              value={fair.date || ""}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-black"
+              required
+            />
+          </div>
 
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Horário</label>
-          <input
-            type="time"
-            name="time"
-            value={fair.time || ""}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
-        </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-2">
+              Horário
+            </label>
+            <input
+              type="time"
+              name="time"
+              value={fair.time || ""}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-black"
+              required
+            />
+          </div>
 
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Local</label>
-          <input
-            type="text"
-            name="local"
-            value={fair.local || ""}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
-        </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-2">
+              Local
+            </label>
+            <input
+              type="text"
+              name="local"
+              value={fair.local || ""}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-black"
+              required
+            />
+          </div>
 
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">
-            Tipo de produto vendido
-          </label>
-          <select
-            name="productTypes"
-            value={fair.productTypes || "OTHERS"}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-2">
+              Tipo de produto vendido
+            </label>
+            <select
+              name="productTypes"
+              value={fair.productTypes || "OTHERS"}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-black"
+            >
+              <option value="ARTESANATO">Artesanato</option>
+              <option value="ALIMENTOS">Alimentos</option>
+              <option value="MODA">Moda</option>
+              <option value="EVENTOS_CULTURAIS">Eventos Culturais</option>
+              <option value="OTHERS">Outros</option>
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition"
           >
-            <option value="ARTESANATO">Artesanato</option>
-            <option value="ALIMENTOS">Alimentos</option>
-            <option value="MODA">Moda</option>
-            <option value="EVENTOS_CULTURAIS">Eventos Culturais</option>
-            <option value="OTHERS">Outros</option>
-          </select>
-        </div>
-
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded-md"
-        >
-          Salvar
-        </button>
-      </form>
+            Salvar
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

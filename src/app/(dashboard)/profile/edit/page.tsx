@@ -129,146 +129,166 @@ export default function EditProfile() {
   if (!profile) return <p>Perfil não encontrado</p>;
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Editar Perfil</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Nome Completo</label>
-          <input
-            type="text"
-            name="fullName"
-            value={formData.fullName || ""}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
-        </div>
+    <div className="min-h-screen w-2/3 flex justify-center items-center">
+      <div className="max-w-lg w-full bg-white p-6 rounded-xl shadow-lg">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Editar Perfil</h1>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block font-semibold mb-2 text-gray-700">
+              Nome Completo
+            </label>
+            <input
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-black"
+              required
+            />
+          </div>
 
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email || ""}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
-        </div>
+          <div className="mb-4">
+            <label className="block font-semibold mb-2 text-gray-700">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-black"
+              required
+            />
+          </div>
 
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Role</label>
-          <select
-            name="role"
-            value={formData.role || "VISITANTE"}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          >
-            <option value="VISITANTE">Visitante</option>
-            <option value="VENDEDOR">Vendedor</option>
-            <option value="ORGANIZADOR">Organizador</option>
-          </select>
-        </div>
+          <div className="mb-4">
+            <label className="block font-semibold mb-2 text-gray-700">
+              Role
+            </label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md text-black"
+            >
+              <option value="VISITANTE">Visitante</option>
+              <option value="VENDEDOR">Vendedor</option>
+              <option value="ORGANIZADOR">Organizador</option>
+            </select>
+          </div>
 
-        {formData.role === "VENDEDOR" && (
-          <>
+          {formData.role === "VENDEDOR" && (
+            <>
+              <div className="mb-4">
+                <label className="block font-semibold mb-2 text-gray-700">
+                  Nome da Loja
+                </label>
+                <input
+                  type="text"
+                  name="storeName"
+                  value={formData.storeName}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-md text-black"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block font-semibold mb-2 text-gray-700">
+                  O que você vende?
+                </label>
+                <input
+                  type="text"
+                  name="whatSells"
+                  value={formData.whatSells}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-md text-black"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block font-semibold mb-2 text-gray-700">
+                  CNPJ
+                </label>
+                <input
+                  type="text"
+                  name="cnpj"
+                  value={formData.cnpj}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-md text-black"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block font-semibold mb-2 text-gray-700">
+                  Palavras-chave
+                </label>
+                <div className="flex space-x-2 mb-2">
+                  <input
+                    type="text"
+                    value={newKeyword}
+                    onChange={(e) => setNewKeyword(e.target.value)}
+                    className="flex-1 p-2 border border-gray-300 rounded-md text-black"
+                    placeholder="Adicionar palavra-chave"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddKeyword}
+                    className="bg-green-500 text-white px-4 py-2 rounded-md"
+                  >
+                    Adicionar
+                  </button>
+                </div>
+                <ul className="space-y-2">
+                  {Array.isArray(formData.keywords) &&
+                  formData.keywords.length > 0 ? (
+                    formData.keywords.map((keyword) => (
+                      <li
+                        key={keyword}
+                        className="flex justify-between items-center bg-gray-200 p-2 rounded-md"
+                      >
+                        {keyword}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveKeyword(keyword)}
+                          className="text-red-500"
+                        >
+                          Remover
+                        </button>
+                      </li>
+                    ))
+                  ) : (
+                    <p className="text-gray-500">
+                      Nenhuma palavra-chave adicionada
+                    </p>
+                  )}
+                </ul>
+              </div>
+            </>
+          )}
+
+          {formData.role === "ORGANIZADOR" && (
             <div className="mb-4">
-              <label className="block font-semibold mb-2">Nome da Loja</label>
-              <input
-                type="text"
-                name="storeName"
-                value={formData.storeName || ""}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block font-semibold mb-2">
-                O que você vende?
+              <label className="block font-semibold mb-2 text-gray-700">
+                CPF ou CNPJ
               </label>
               <input
                 type="text"
-                name="whatSells"
-                value={formData.whatSells || ""}
+                name="cpfOrCnpj"
+                value={formData.cpfOrCnpj}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-2 border border-gray-300 rounded-md text-black"
               />
             </div>
+          )}
 
-            <div className="mb-4">
-              <label className="block font-semibold mb-2">CNPJ</label>
-              <input
-                type="text"
-                name="cnpj"
-                value={formData.cnpj || ""}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block font-semibold mb-2">Palavras-chave</label>
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  value={newKeyword}
-                  onChange={(e) => setNewKeyword(e.target.value)}
-                  className="flex-1 p-2 border border-gray-300 rounded-md"
-                  placeholder="Adicionar palavra-chave"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddKeyword}
-                  className="bg-green-500 text-white px-4 py-2 rounded-md"
-                >
-                  Adicionar
-                </button>
-              </div>
-              <ul className="mt-2">
-                {Array.isArray(formData.keywords) &&
-                formData.keywords.length > 0 ? (
-                  formData.keywords.map((keyword) => (
-                    <li
-                      key={keyword}
-                      className="flex justify-between items-center bg-gray-200 p-2 rounded-md mb-2"
-                    >
-                      {keyword}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveKeyword(keyword)}
-                        className="text-red-500"
-                      >
-                        Remover
-                      </button>
-                    </li>
-                  ))
-                ) : (
-                  <p>Nenhuma palavra-chave adicionada</p>
-                )}
-              </ul>
-            </div>
-          </>
-        )}
-
-        {formData.role === "ORGANIZADOR" && (
-          <div className="mb-4">
-            <label className="block font-semibold mb-2">CPF ou CNPJ</label>
-            <input
-              type="text"
-              name="cpfOrCnpj"
-              value={formData.cpfOrCnpj || ""}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
-          </div>
-        )}
-
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded-md"
-        >
-          Salvar
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded-md mt-4 hover:bg-blue-600 transition"
+          >
+            Salvar
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

@@ -49,15 +49,11 @@ export default function Approvals() {
       const data = await response.json();
 
       if (data.success) {
-        const updatedApprovals = [...approvals];
-        const updated = updatedApprovals.filter(
-          (approval) => approval.id === req.userId
-        );
-        updated[0].role = "ORGANIZADOR";
-
         setApprovals((prev) =>
           prev.map((approval) =>
-            approval.id === req.userId ? updated[0] : approval
+            approval.id === req.userId
+              ? { ...approval, role: "ORGANIZADOR" }
+              : approval
           )
         );
       }
@@ -105,47 +101,77 @@ export default function Approvals() {
     fetchApprovals();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
-  if (!approvals) return <p>No approvals data available</p>;
+  if (loading) return <p className="text-center py-4">Carregando...</p>;
+  if (error) return <p className="text-center text-red-500 py-4">{error}</p>;
+  if (!approvals || approvals.length === 0)
+    return (
+      <p className="text-center py-4">
+        Nenhuma solicitação de aprovação disponível
+      </p>
+    );
 
   return (
-    <div>
-      {approvals.map((approvals) => {
-        if (approvals.role !== "ORGANIZADOR") {
+    <div className="max-w-5xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4 text-black">
+        Solicitações de Aprovação
+      </h1>
+      {approvals.map((approval) => {
+        if (approval.role !== "ORGANIZADOR") {
+          const request = approval.approvalRequests[0];
           return (
-            <div key={approvals.id}>
-              <p>{approvals.fullName}</p>
-              <p>{approvals.email}</p>
-              <p>{approvals.approvalRequests[0].cpfOrCnpj}</p>
-              <p>{approvals.approvalRequests[0].requestedRole}</p>
-              <p>{approvals.approvalRequests[0].status}</p>
-              <button
-                onClick={() =>
-                  handleEditApproval({
-                    status: "approve",
-                    id: approvals.approvalRequests[0].id,
-                    userId: approvals.id,
-                    cpfOrCnpj: approvals.approvalRequests[0].cpfOrCnpj,
-                  })
-                }
-                className="bg-blue-500 text-white p-2 rounded-md"
+            <div
+              key={approval.id}
+              className="bg-white shadow-md rounded-lg p-4 mb-4 border"
+            >
+              <h2 className="text-xl font-semibold mb-2 text-black">
+                {approval.fullName}
+              </h2>
+              <p className="text-black mb-1">Email: {approval.email}</p>
+              <p className="text-black mb-1">
+                CPF ou CNPJ: {request.cpfOrCnpj}
+              </p>
+              <p className="text-black mb-1">
+                Papel Requisitado: {request.requestedRole}
+              </p>
+              <p
+                className={`mb-2 ${
+                  request.status === "PENDING"
+                    ? "text-yellow-500"
+                    : request.status === "APPROVED"
+                    ? "text-green-500"
+                    : "text-red-500"
+                }`}
               >
-                Aprovar solicitação
-              </button>
-              <button
-                onClick={() =>
-                  handleEditApproval({
-                    status: "reject",
-                    id: approvals.approvalRequests[0].id,
-                    userId: approvals.id,
-                    cpfOrCnpj: approvals.approvalRequests[0].cpfOrCnpj,
-                  })
-                }
-                className="bg-red-500 text-white p-2 rounded-md"
-              >
-                Recusar solicitação
-              </button>
+                Status: {request.status}
+              </p>
+              <div className="flex space-x-4">
+                <button
+                  onClick={() =>
+                    handleEditApproval({
+                      status: "APPROVED",
+                      id: request.id,
+                      userId: approval.id,
+                      cpfOrCnpj: request.cpfOrCnpj,
+                    })
+                  }
+                  className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                >
+                  Aprovar solicitação
+                </button>
+                <button
+                  onClick={() =>
+                    handleEditApproval({
+                      status: "REJECTED",
+                      id: request.id,
+                      userId: approval.id,
+                      cpfOrCnpj: request.cpfOrCnpj,
+                    })
+                  }
+                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                >
+                  Recusar solicitação
+                </button>
+              </div>
             </div>
           );
         }

@@ -47,7 +47,7 @@ export async function POST(req: Request) {
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const { token, id, name, description, date, time, local, productTypes, status, vendors: vendorIds } = body;
+    const { token, id, name, description, date, time, local, productTypes, status } = body;
 
     if (!token || !id) {
       return NextResponse.json({ error: "Token and fair Id are required" }, { status: 400 });
@@ -69,10 +69,7 @@ export async function PATCH(request: Request) {
     }
 
     const fair = await prisma.fair.findUnique({
-      where: { id },
-      include: {
-        vendors: true,
-      }
+      where: { id }
     })
 
     if (!fair || fair.organizerId !== organizer.userId) {
@@ -88,20 +85,14 @@ export async function PATCH(request: Request) {
         time: time || fair.time,
         local: local || fair.local,
         productTypes: productTypes || fair.productTypes,
-        status: status || fair.status,
-        vendors: {
-          set: vendorIds ? vendorIds.map((id: number) => ({ id })) : fair.vendors,
-        },
-      },
-      include: {
-        vendors: true,
+        status: status || fair.status
       }
     });
 
     return NextResponse.json({ success: "Fair updated." }, { status: 200 });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error(error);
-    return NextResponse.json({ error: 'Error updating profile' }, { status: 500 });
+    console.error("Erro ao atualizar feira:", error); // Log mais detalhado
+    return NextResponse.json({ error: 'Error updating fair', details: error.message }, { status: 500 });
   }
 }
