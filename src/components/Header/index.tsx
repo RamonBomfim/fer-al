@@ -74,7 +74,7 @@ export function Header() {
           </li>
           <li>
             <Link href="/profile" className="hover:text-gray-400">
-              Profile
+              Perfil
             </Link>
           </li>
 
@@ -90,6 +90,14 @@ export function Header() {
             <li>
               <Link href="/my-fairs" className="hover:text-gray-400">
                 Minhas feiras
+              </Link>
+            </li>
+          )}
+
+          {role === Role.vendedor && (
+            <li>
+              <Link href="/my-subscriptions" className="hover:text-gray-400">
+                Minhas inscrições
               </Link>
             </li>
           )}

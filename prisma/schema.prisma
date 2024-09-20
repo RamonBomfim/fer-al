@@ -8,12 +8,14 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  fullName  String
-  email     String   @unique
-  password  String
-  role      Role     @default(VISITANTE)
-  createdAt DateTime @default(now())
+  id                        Int                        @id @default(autoincrement())
+  fullName                  String
+  email                     String                     @unique
+  password                  String
+  role                      Role                       @default(VISITANTE)
+  notificationSubscriptions NotificationSubscription[]
+  deviceTokens              DeviceToken[]
+  createdAt                 DateTime                   @default(now())
 
   vendor           Vendor?
   organizer        Organizer?
@@ -30,7 +32,7 @@ model Vendor {
   cnpj         String
   keywords     String[]
 
-  fairs Fair[] @relation("FairVendors")
+  fairs FairVendor[]
 }
 
 model Organizer {
@@ -63,7 +65,41 @@ model Fair {
   local        String
   status       FairStatus   @default(COMING)
   productTypes ProductTypes
-  vendors      Vendor[]     @relation("FairVendors")
+  vendors      FairVendor[]
+}
+
+model FairVendor {
+  fairId   Int
+  vendorId Int
+
+  fair   Fair   @relation(fields: [fairId], references: [id])
+  vendor Vendor @relation(fields: [vendorId], references: [userId])
+
+  @@id([fairId, vendorId]) // Chave composta para garantir unicidade
+}
+
+model NotificationSubscription {
+  id           Int              @id @default(autoincrement())
+  userId       Int
+  user         User             @relation(fields: [userId], references: [id])
+  type         NotificationType
+  fairId       Int?
+  productTypes ProductTypes[]
+  location     String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model DeviceToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  token     String
+  platform  Platform
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, token])
 }
 
 enum ApprovalStatus {
@@ -92,4 +128,16 @@ enum FairStatus {
   DELAYED
   HAPPENED
   COMING
+}
+
+enum NotificationType {
+  FEIRA_PROXIMA
+  ATUALIZACAO_FEIRA
+  PROMOCAO_ESPECIAL
+}
+
+enum Platform {
+  IOS
+  ANDROID
+  WEB
 }

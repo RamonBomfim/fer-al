@@ -1,4 +1,6 @@
 "use client";
+import AvatarImg from "@/app/assets/undraw_pic_profile_re_7g2h.svg";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -80,53 +82,87 @@ export default function Profile() {
   if (!profile) return <p>No profile data available</p>;
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Meu Perfil</h1>
-      <div className="mb-4">
-        <h2 className="text-xl font-semibold">Informações Pessoais</h2>
-        <p>
-          <strong>Nome Completo:</strong> {profile.fullName}
-        </p>
-        <p>
-          <strong>Email:</strong> {profile.email}
-        </p>
-        <p>
-          <strong>Role:</strong> {profile.role}
-        </p>
-        {profile.role === "VENDEDOR" && (
-          <>
+    <div className="flex flex-col flex-1 gap-4 items-center pt-6">
+      <h1 className="text-3xl font-bold text-center text-gray-800">
+        Meu Perfil
+      </h1>
+      <div className="max-w-md w-full bg-white p-6 rounded-xl shadow-lg">
+        <div className="flex items-center mb-4">
+          <div className="mr-4">
+            <Image
+              src={AvatarImg}
+              alt="Imagem de avatar de perfil"
+              className="w-24 h-24 rounded-full border-2 border-gray-300"
+            />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">
+              {profile.fullName}
+            </h1>
+            <p className="text-gray-500">{profile.email}</p>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-200 pt-4">
+          <h2 className="text-lg font-semibold text-gray-700 mb-3">
+            Informações Pessoais
+          </h2>
+          <div className="space-y-2">
             <p>
-              <strong>Nome da Loja:</strong> {profile.vendor?.storeName}
+              <strong className="text-gray-600">Role:</strong>{" "}
+              <span className="text-gray-800">{profile.role}</span>
             </p>
-            <p>
-              <strong>O que Vende:</strong> {profile.vendor?.whatSells}
-            </p>
-            <p>
-              <strong>Nome dos Sócios:</strong> {profile.vendor?.partnerNames}
-            </p>
-            <p>
-              <strong>CNPJ:</strong> {profile.vendor?.cnpj}
-            </p>
-            <p>
-              <strong>Palavras-Chave:</strong>
-              {profile.vendor?.keywords
-                ?.map((keyword) => "#" + keyword)
-                .join(", ")}
-            </p>
-          </>
-        )}
-        {profile.role === "ORGANIZADOR" && (
-          <p>
-            <strong>CNPJ ou CPF:</strong> {profile.organizer?.cpfOrCnpj}
-          </p>
-        )}
+            {profile.role === "VENDEDOR" && (
+              <>
+                <p>
+                  <strong className="text-gray-600">Nome da Loja:</strong>{" "}
+                  <span className="text-gray-800">
+                    {profile.vendor?.storeName}
+                  </span>
+                </p>
+                <p>
+                  <strong className="text-gray-600">O que Vende:</strong>{" "}
+                  <span className="text-gray-800">
+                    {profile.vendor?.whatSells}
+                  </span>
+                </p>
+                <p>
+                  <strong className="text-gray-600">Nome dos Sócios:</strong>{" "}
+                  <span className="text-gray-800">
+                    {profile.vendor?.partnerNames}
+                  </span>
+                </p>
+                <p>
+                  <strong className="text-gray-600">CNPJ:</strong>{" "}
+                  <span className="text-gray-800">{profile.vendor?.cnpj}</span>
+                </p>
+                <p>
+                  <strong className="text-gray-600">Palavras-Chave:</strong>{" "}
+                  <span className="text-gray-800">
+                    {profile.vendor?.keywords
+                      ?.map((keyword) => "#" + keyword)
+                      .join(", ")}
+                  </span>
+                </p>
+              </>
+            )}
+            {profile.role === "ORGANIZADOR" && (
+              <p>
+                <strong className="text-gray-600">CNPJ ou CPF:</strong>{" "}
+                <span className="text-gray-800">
+                  {profile.organizer?.cpfOrCnpj}
+                </span>
+              </p>
+            )}
+          </div>
+        </div>
+        <button
+          onClick={handleEditClick}
+          className="mt-6 bg-blue-500 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-600 transition"
+        >
+          Editar Perfil
+        </button>
       </div>
-      <button
-        onClick={handleEditClick}
-        className="bg-blue-500 text-white p-2 rounded-md"
-      >
-        Editar Perfil
-      </button>
     </div>
   );
 }
