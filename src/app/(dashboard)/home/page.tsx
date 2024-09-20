@@ -86,7 +86,7 @@ export default function FairList() {
       setFairs(data.fairs || []);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      alert("Nenhuma feira encontrada com esse filtro");
+      console.error("Nenhuma feira encontrada com esse filtro");
     } finally {
       setLoading(false);
     }
