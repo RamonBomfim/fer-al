@@ -148,7 +148,7 @@ export default function Approvals() {
                 <button
                   onClick={() =>
                     handleEditApproval({
-                      status: "APPROVED",
+                      status: "approve",
                       id: request.id,
                       userId: approval.id,
                       cpfOrCnpj: request.cpfOrCnpj,

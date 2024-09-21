@@ -82,7 +82,7 @@ export async function PATCH(request: Request) {
     await prisma.approvalRequest.update({
       where: { id: id },
       data: {
-        status: status === "approve" ? "APPROVED" : "REJECTED",
+        status: status.toLowerCase() === "approve" ? "APPROVED" : "REJECTED",
       },
     });
 
